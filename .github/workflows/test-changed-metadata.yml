@@ -1,64 +1,31 @@
 name: "Test changed metadata"
 
 on:
-  pull_request:
+  push:
     branches:
-      - master
-    paths:
-      - 'metadata/**'
-      - 'tests/**'
-      - '.github/**'
-
-concurrency:
-  group: "workflow = ${{ github.workflow }}, ref = ${{ github.event.ref }}, pr = ${{ github.event.pull_request.id }}"
-  cancel-in-progress: true
+      - hazelcast
 
 jobs:
-  get-changed-metadata:
-    name: "📋 Get a list of all changed libraries"
+
+  test-changed-metadata:
+    name: "🧪"
     runs-on: "ubuntu-20.04"
-    timeout-minutes: 5
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-      none-found: ${{ steps.set-matrix.outputs.none-found }}
+    timeout-minutes: 20
+
     steps:
       - name: "☁️ Checkout repository"
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
       - name: "🔧 Prepare environment"
         uses: graalvm/setup-graalvm@v1
         with:
           version: 'latest'
-          java-version: '17'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: "🕸️ Populate matrix"
-        id: set-matrix
-        run: |
-          ./gradlew generateMatrixDiffCoordinates -PbaseCommit=${{ github.event.pull_request.base.sha }} -PnewCommit=${{ github.event.pull_request.head.sha }}
-
-  test-changed-metadata:
-    name: "🧪 ${{ matrix.coordinates }} (GraalVM ${{ matrix.version }} ${{ matrix.java-version }} @ ${{ matrix.os }})"
-    if: needs.get-changed-metadata.result == 'success' && needs.get-changed-metadata.outputs.none-found != 'true'
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 20
-    needs: get-changed-metadata
-
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJson(needs.get-changed-metadata.outputs.matrix) }}
-    steps:
-      - name: "☁️ Checkout repository"
-        uses: actions/checkout@v3
-      - name: "🔧 Prepare environment"
-        uses: graalvm/setup-graalvm@v1
-        with:
-          version: ${{ matrix.version }}
-          java-version: ${{ matrix.java-version }}
+          java-version: 17
           components: 'native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
           native-image-pr-reports: 'true'
-      - name: "🧪 Run '${{ matrix.coordinates }}' tests"
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+      - name: "🧪 Run 'com.hazelcast:hazelcast:5.2.1' tests"
         run: |
-          ./gradlew test -Pcoordinates=${{ matrix.coordinates }}
+          ./gradlew test -Pcoordinates=com.hazelcast:hazelcast:5.2.1
