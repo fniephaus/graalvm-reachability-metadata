@@ -13,6 +13,6 @@ updates:
         type: docker-registry
         url: https://container-registry.oracle.com
     reviewers:
-      - "matneu"
+      - "fniephaus"
     schedule:
       interval: "weekly"
