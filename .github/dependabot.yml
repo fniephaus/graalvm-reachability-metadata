@@ -3,20 +3,9 @@
 
 version: 2
 
-registries:
-    dockerhub:
-      type: docker-registry
-      url: https://registry.hub.docker.com
-    oracle:
-      type: docker-registry
-      url: https://container-registry.oracle.com
-
 updates:
   - package-ecosystem: "docker"
     directory: "/"
-    registries:
-      - dockerhub
-      - oracle
     reviewers:
       - "fniephaus"
     schedule:
