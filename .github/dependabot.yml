@@ -5,7 +5,7 @@ version: 2
 
 updates:
   - package-ecosystem: "docker"
-    directory: "/"
+    directory: "/tests/tck-build-logic/src/main/resources/dockerfiles"
     reviewers:
       - "fniephaus"
     schedule:
