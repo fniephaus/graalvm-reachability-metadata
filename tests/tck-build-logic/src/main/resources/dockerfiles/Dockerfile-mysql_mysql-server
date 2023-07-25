@@ -1,1 +1,1 @@
-FROM mysql/mysql-server:8.0
+FROM container-registry.oracle.com/mysql/community-server:8.1
